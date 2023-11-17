@@ -15,6 +15,7 @@ func main() {
 	routes.InventoryRoute(server)
 	routes.InventoryNameRoute(server)
 	routes.InventoryCategoryRoute(server)
+	routes.InventoryTransferRoute(server)
 
 	server.Run(":8080")
 
