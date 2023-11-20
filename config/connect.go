@@ -57,19 +57,25 @@ func CreateTables() {
 	
 	db := GetDB()
 
+	_,err := db.Exec("ALTER TABLE  IF EXISTS InventoryName RENAME TO inventory_name;")
+	CheckError(err)
+
+	_,err = db.Exec("ALTER TABLE  IF EXISTS InventoryTransfer RENAME TO inventory_transfer;")
+	CheckError(err)
+
 	// Create table 'category'
-	_, err := db.Exec("CREATE TABLE IF NOT EXISTS category ( id SERIAL PRIMARY KEY, name VARCHAR(50) NOT NULL );")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS category ( id SERIAL PRIMARY KEY, name VARCHAR(50) NOT NULL );")
 	CheckError(err)
 
 	// Create table 'inventoryName'
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS inventoryName ( id SERIAL PRIMARY KEY, name VARCHAR(50) NOT NULL, categoryId INTEGER REFERENCES category(id) );")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS inventory_name ( id SERIAL PRIMARY KEY, name VARCHAR(50) NOT NULL, categoryId INTEGER REFERENCES category(id) );")
 	CheckError(err)
 
 	// Create table 'inventory'
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS inventory ( id SERIAL PRIMARY KEY, account_id INTEGER, state_id INTEGER, ident VARCHAR(50), date_pay DATE, date_create TIMESTAMP, category_id INTEGER REFERENCES category(id), name_id INTEGER REFERENCES inventoryName(id));")
 	CheckError(err)
 	
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS inventoryTransfer  ( id SERIAL PRIMARY KEY, sender_id INTEGER, reciever_id INTEGER, ident VARCHAR(50), transfer_date TIMESTAMP, status VARCHAR(50));")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS inventory_transfer  ( id SERIAL PRIMARY KEY, sender_id INTEGER, reciever_id INTEGER, ident VARCHAR(50), transfer_date TIMESTAMP, status VARCHAR(50));")
 	CheckError(err)
 
 	log.Println("Tables created!")

@@ -14,7 +14,7 @@ func GetAllTransfers(c *gin.Context){
 
 	db := config.GetDB()
 
-	rows, err := db.Query("SELECT * FROM inventoryTransfer")
+	rows, err := db.Query("SELECT * FROM inventory_transfer")
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
@@ -57,7 +57,7 @@ func AddTransferInventory(c *gin.Context) {
 		return
 	}
 
-	query := `INSERT INTO inventoryTransfer(sender_id,reciever_id,ident,transfer_date,status) VALUES($1, $2, $3, $4, $5) RETURNING id`
+	query := `INSERT INTO inventory_transfer(sender_id,reciever_id,ident,transfer_date,status) VALUES($1, $2, $3, $4, $5) RETURNING id`
 	err := db.QueryRow(query, transfer.SenderID,transfer.ReceiverID,transfer.Ident,transfer.TransferDate,transfer.Status).Scan(&transfer.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -74,7 +74,7 @@ func GetTransferInventoryById(c *gin.Context){
 
 	db := config.GetDB()
 	
-	row := db.QueryRow("SELECT * FROM inventoryTransfer WHERE id = $1", id)
+	row := db.QueryRow("SELECT * FROM inventory_transfer WHERE id = $1", id)
 
 	// этот код сканирует возвращенную строку базы данных и связывает значения полей с атрибутами структуры Inventory.
 	err := row.Scan(&transfer.ID,&transfer.SenderID,&transfer.ReceiverID,&transfer.Ident,&transfer.TransferDate,&transfer.Status)
@@ -107,7 +107,7 @@ func UpdateTransferInventoryById(c *gin.Context){
 	}
 
 	
-	sqlStatement := `UPDATE InventoryTransfer SET sender_id = $1, reciever_id = $2, ident = $3, 
+	sqlStatement := `UPDATE Inventory_transfer SET sender_id = $1, reciever_id = $2, ident = $3, 
 	transfer_date = $4, status = $5 WHERE id = $6`
 	_, err = db.Exec(sqlStatement,transfer.SenderID, transfer.ReceiverID, transfer.Ident, transfer.TransferDate, transfer.Status, c.Param("id"))
 	if err != nil {
@@ -124,7 +124,7 @@ func DeleteTransferInventoryById(c *gin.Context){
 	
 	db := config.GetDB()
 
-	stmt := `DELETE FROM inventoryTransfer WHERE ID=$1`
+	stmt := `DELETE FROM inventory_transfer WHERE ID=$1`
 
 	_, err := db.Exec(stmt, c.Param("id"))
 
@@ -145,7 +145,7 @@ func ChangeInventoryStatus(c *gin.Context){
 
 	db := config.GetDB()
 	
-	row := db.QueryRow("SELECT * FROM inventoryTransfer WHERE id = $1", id)
+	row := db.QueryRow("SELECT * FROM inventory_transfer WHERE id = $1", id)
 
 	// этот код сканирует возвращенную строку базы данных и связывает значения полей с атрибутами структуры Inventory.
 	err := row.Scan(&transfer.ID,&transfer.SenderID,&transfer.ReceiverID,&transfer.Ident,&transfer.TransferDate,&transfer.Status)
@@ -174,7 +174,7 @@ func ChangeInventoryStatus(c *gin.Context){
 	
 	if statusUpdate.Status == "в обработке" || statusUpdate.Status == "отклонен"{
 		
-		query := `UPDATE inventoryTransfer SET status = $1 WHERE id = $2`
+		query := `UPDATE inventory_transfer SET status = $1 WHERE id = $2`
     	_, err = db.Exec(query, statusUpdate.Status, id)
     	if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -187,7 +187,7 @@ func ChangeInventoryStatus(c *gin.Context){
 
 	}else if statusUpdate.Status == "подтвержден"{
 		
-		query := `UPDATE inventoryTransfer SET status = $1 WHERE id = $2`
+		query := `UPDATE inventory_transfer SET status = $1 WHERE id = $2`
     	
 		_, err = db.Exec(query, statusUpdate.Status, id)
     	if err != nil {

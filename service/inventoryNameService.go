@@ -14,7 +14,7 @@ func GetAllInventoriesName(c *gin.Context){
 	
 	db := config.GetDB()
 
-	rows, err := db.Query("SELECT * FROM inventoryName")
+	rows, err := db.Query("SELECT * FROM inventory_name")
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
@@ -54,7 +54,7 @@ func GetInventoryNameById(c *gin.Context) {
 
 	db := config.GetDB()
 
-	row := db.QueryRow("SELECT * FROM inventoryName WHERE id = $1", id)
+	row := db.QueryRow("SELECT * FROM inventory_name WHERE id = $1", id)
 
 	// этот код сканирует возвращенную строку базы данных и связывает значения полей с атрибутами структуры Inventory.
 	err := row.Scan(&inventoryName.ID, &inventoryName.Name,&inventoryName.CategoryId)
@@ -85,7 +85,7 @@ func AddInventoryName(c *gin.Context) {
 		return
 	}
 
-	query := `INSERT INTO inventoryName(name,categoryId) VALUES($1, $2) RETURNING id`
+	query := `INSERT INTO inventory_name(name,categoryId) VALUES($1, $2) RETURNING id`
 	
 	err := db.QueryRow(query, inventoryName.Name,inventoryName.CategoryId).Scan(&inventoryName.ID)
 	
@@ -109,7 +109,7 @@ func UpdateInventoryNameById(c *gin.Context){
 	}
 
 	
-	sqlStatement := `UPDATE inventoryName SET name=$1, categoryId=$2 WHERE id=$3`
+	sqlStatement := `UPDATE inventory_name SET name=$1, categoryId=$2 WHERE id=$3`
 	_, err = db.Exec(sqlStatement, inventoryName.Name, inventoryName.CategoryId, c.Param("id"))
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to update inventory name"})
@@ -127,7 +127,7 @@ func DeleteInventoryNameById(c *gin.Context) {
 
 	id := c.Param("id")
 
-	stmt := `DELETE FROM inventoryName WHERE ID=$1`
+	stmt := `DELETE FROM inventory_name WHERE ID=$1`
 
 	_, err := db.Exec(stmt, id)
 
