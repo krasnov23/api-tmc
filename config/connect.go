@@ -4,14 +4,26 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 var DB *sql.DB
 
 func Connect(){
-	connStr := "postgres://postgres:postgres@localhost:5436/tmc?sslmode=disable"
+	
+	godotenv.Load()
+	
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_SSL_MODE"),
+	)
 	
 	// Открывает коннект с базой данных
 	db, err := sql.Open("postgres", connStr)
